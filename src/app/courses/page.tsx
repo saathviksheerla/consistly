@@ -122,10 +122,10 @@ export default function CoursesPage() {
                                         </div>
                                         <ProgressBar progress={progress} />
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex flex-wrap gap-2 mt-2">
                                         <Button
                                             variant="secondary"
-                                            className="flex-1"
+                                            className="flex-1 md:flex-none text-xs md:text-sm px-2 md:px-4"
                                             onClick={() => incrementProgress(course.id)}
                                             disabled={isDone}
                                         >
@@ -133,14 +133,14 @@ export default function CoursesPage() {
                                         </Button>
                                         <Button
                                             variant="outline"
-                                            className="px-3"
+                                            className="px-3 text-xs md:text-sm flex-1 md:flex-none"
                                             onClick={() => openModal(course)}
                                         >
                                             Edit
                                         </Button>
                                         <Button
                                             variant="ghost"
-                                            className="text-red-500 hover:text-red-400 hover:bg-red-500/10 px-3"
+                                            className="text-red-500 hover:text-red-400 hover:bg-red-500/10 px-3 text-xs md:text-sm w-full md:w-auto mt-1 md:mt-0"
                                             onClick={() => deleteCourse(course.id)}
                                         >
                                             Delete
