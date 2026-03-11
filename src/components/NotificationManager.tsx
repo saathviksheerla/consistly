@@ -38,13 +38,13 @@ export function NotificationManager() {
             const currentTime = `${currentHours}:${currentMinutes}`;
 
             if (currentTime === settings.reminderTime) {
-                const lastNotified = localStorage.getItem("consistencie_lastNotified");
+                const lastNotified = localStorage.getItem("consistly_lastNotified");
                 if (lastNotified !== todayStr) {
                     new Notification("Time to study, Saathvik! 🎯", {
-                        body: "Keep your streak alive. Open consistencie to log your session.",
+                        body: "Keep your streak alive. Open consistly to log your session.",
                         icon: "/favicon.ico", // simplified icon
                     });
-                    localStorage.setItem("consistencie_lastNotified", todayStr);
+                    localStorage.setItem("consistly_lastNotified", todayStr);
                 }
             }
         };

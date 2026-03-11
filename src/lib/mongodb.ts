@@ -1,7 +1,7 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 import mongoose from "mongoose";
 
-const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/consistencie_dummy";
+const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/consistly_dummy";
 const options = {
     serverApi: {
         version: ServerApiVersion.v1,

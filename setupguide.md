@@ -21,7 +21,7 @@ This connects your app to your remote MongoDB database.
 7. Copy the connection string. It looks like this: 
    `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority`
 8. Paste it into `.env.local` as `MONGODB_URI`. 
-   *Important*: Replace `<username>` and `<password>` with the database credentials you made in Step 4. You can also append a database name before the `?` like `mongodb.net/consistencie_db?retryWrites...`
+   *Important*: Replace `<username>` and `<password>` with the database credentials you made in Step 4. You can also append a database name before the `?` like `mongodb.net/consistly_db?retryWrites...`
 
 ---
 
@@ -30,7 +30,7 @@ Lets users sign in with 1-click using their GitHub accounts.
 **How to get it:**
 1. Go to your [GitHub Developer Settings -> OAuth Apps](https://github.com/settings/developers).
 2. Click **"New OAuth App"**.
-   - **Application Name:** consistencie
+   - **Application Name:** consistly
    - **Homepage URL:** `http://localhost:3000`
    - **Authorization callback URL:** `http://localhost:3000/api/auth/callback/github`
 3. Click "Register application".
@@ -43,7 +43,7 @@ Lets users sign in with 1-click using their GitHub accounts.
 Lets users sign in using their Google accounts.
 **How to get it:**
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
-2. Create a New Project named "consistencie".
+2. Create a New Project named "consistly".
 3. Navigate to **APIs & Services -> OAuth consent screen**.
    - Choose **External** and fill in the required App name and email fields.
 4. Navigate to **APIs & Services -> Credentials**.

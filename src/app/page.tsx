@@ -18,7 +18,7 @@ export default function LandingPage() {
     return (
         <div className="flex flex-col items-center justify-center min-h-[80vh] px-6 text-center animate-in fade-in duration-1000">
             <div className="bg-accent/10 text-accent font-medium px-4 py-1.5 rounded-full text-sm mb-8 border border-accent/20">
-                consistencie v2.0
+                consistly v2.0
             </div>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 max-w-4xl">
                 Master anything through <br className="hidden md:block" />

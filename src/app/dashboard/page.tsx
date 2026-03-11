@@ -11,7 +11,7 @@ export default function Home() {
     <div className="p-6 md:p-10 pb-20 max-w-5xl mx-auto w-full flex flex-col gap-8 animate-in fade-in duration-500">
       <header>
         <h1 className="text-3xl font-bold tracking-tight mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back to consistencie.</p>
+        <p className="text-muted-foreground">Welcome back to consistly.</p>
       </header>
 
       <QuickBookmarks />

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "consistencie",
+  title: "consistly",
   description: "Personal Learning Tracker",
 };
 

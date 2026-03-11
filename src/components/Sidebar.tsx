@@ -39,7 +39,7 @@ export function Sidebar({ className = "" }: { className?: string }) {
         const data: Record<string, any> = {};
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
-            if (key && key.startsWith("consistencie_")) {
+            if (key && key.startsWith("consistly_")) {
                 try {
                     data[key] = JSON.parse(localStorage.getItem(key) || "");
                 } catch {
@@ -51,7 +51,7 @@ export function Sidebar({ className = "" }: { className?: string }) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `consistencie_backup_${new Date().toISOString().split("T")[0]}.json`;
+        a.download = `consistly_backup_${new Date().toISOString().split("T")[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
 
@@ -68,14 +68,14 @@ export function Sidebar({ className = "" }: { className?: string }) {
             try {
                 const data = JSON.parse(event.target?.result as string);
                 Object.keys(data).forEach((key) => {
-                    if (key.startsWith("consistencie_")) {
+                    if (key.startsWith("consistly_")) {
                         localStorage.setItem(key, typeof data[key] === "string" ? data[key] : JSON.stringify(data[key]));
                     }
                 });
                 alert("Data imported successfully! The app will now reload.");
                 window.location.reload();
             } catch (error) {
-                alert("Failed to parse the backup file. Please make sure it is a valid consistencie backup.");
+                alert("Failed to parse the backup file. Please make sure it is a valid consistly backup.");
                 console.error("Import error:", error);
             }
         };
@@ -89,7 +89,7 @@ export function Sidebar({ className = "" }: { className?: string }) {
                     <div className="bg-accent text-accent-foreground p-1.5 rounded-lg">
                         <IconFlame className="w-5 h-5 text-zinc-950" />
                     </div>
-                    <span className="text-xl font-bold tracking-tight text-white">consistencie</span>
+                    <span className="text-xl font-bold tracking-tight text-white">consistly</span>
                 </div>
 
                 <nav className="flex-1 space-y-1">
@@ -148,7 +148,7 @@ export function Sidebar({ className = "" }: { className?: string }) {
                     <div className="border-t border-border pt-6">
                         <h3 className="font-semibold mb-2">Data Management (SaaS Prep)</h3>
                         <p className="text-xs text-muted-foreground mb-4">
-                            Since consistencie currently stores everything directly in your browser, you can export your data to back it up or import it on another device.
+                            Since consistly currently stores everything directly in your browser, you can export your data to back it up or import it on another device.
                             When Cloud Sync launches, you will be able to upload this backup file to your account!
                         </p>
 

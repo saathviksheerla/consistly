@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export function useLocalStorage<T>(key: string, initialValue: T, userId: string = "guest") {
-    const scopedKey = `consistencie_${userId}_${key}`;
+    const scopedKey = `consistly_${userId}_${key}`;
     const [storedValue, setStoredValue] = useState<T>(initialValue);
     const [isMounted, setIsMounted] = useState(false);
 
