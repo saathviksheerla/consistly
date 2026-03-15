@@ -52,15 +52,12 @@ export default function CoursesPage() {
             setTitle(course.title);
             setUrl(course.url || "");
             setTotalLessons(course.totalLessons.toString());
-            setCategory(course.category);
+            setCategory(course.category || "Uncategorized");
+            setIsModalOpen(true);
         } else {
-            setEditingId(null);
-            setTitle("");
-            setUrl("");
-            setTotalLessons("");
-            setCategory("");
+            // For new courses/habits, redirect to our new flow
+            window.location.href = "/courses/add";
         }
-        setIsModalOpen(true);
     };
 
     const closeModal = () => {
@@ -79,7 +76,7 @@ export default function CoursesPage() {
                     <h1 className="text-3xl font-bold tracking-tight mb-2">Courses & Playlists</h1>
                     <p className="text-muted-foreground">Track your progress through your learning materials.</p>
                 </div>
-                <Button onClick={() => openModal()}>+ Add Course</Button>
+                <Button onClick={() => openModal()}>+ Add Course or Habit</Button>
             </header>
 
             {courses.length === 0 ? (
@@ -92,8 +89,11 @@ export default function CoursesPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {courses.map(course => {
+                        // For flexible items/habits where totalLessons is 0, progress tracking differs.
+                        // They shouldn't be immediately "done" just because 0 >= 0.
+                        const isFlexibleItem = course.totalLessons === 0;
                         const progress = course.totalLessons > 0 ? (course.completedLessons / course.totalLessons) * 100 : 0;
-                        const isDone = course.completedLessons >= course.totalLessons;
+                        const isDone = !isFlexibleItem && course.completedLessons >= course.totalLessons;
 
                         return (
                             <Card key={course.id} className="flex flex-col">
@@ -116,11 +116,20 @@ export default function CoursesPage() {
                                 </CardHeader>
                                 <CardContent className="flex flex-col gap-4 mt-auto">
                                     <div>
-                                        <div className="flex justify-between text-sm mb-2">
-                                            <span className="text-muted-foreground">Progress</span>
-                                            <span className="font-medium">{course.completedLessons} / {course.totalLessons} ({Math.round(progress)}%)</span>
-                                        </div>
-                                        <ProgressBar progress={progress} />
+                                        {isFlexibleItem ? (
+                                            <div className="flex justify-between text-sm mb-2">
+                                                <span className="text-muted-foreground">Times logged</span>
+                                                <span className="font-medium">{course.completedLessons}</span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="flex justify-between text-sm mb-2">
+                                                    <span className="text-muted-foreground">Progress</span>
+                                                    <span className="font-medium">{course.completedLessons} / {course.totalLessons} ({Math.round(progress)}%)</span>
+                                                </div>
+                                                <ProgressBar progress={progress} />
+                                            </>
+                                        )}
                                     </div>
                                     <div className="flex flex-wrap gap-2 mt-2">
                                         <Button
@@ -129,7 +138,7 @@ export default function CoursesPage() {
                                             onClick={() => incrementProgress(course.id)}
                                             disabled={isDone}
                                         >
-                                            {isDone ? "Completed" : "+1 Lesson"}
+                                            {isDone ? "Completed" : isFlexibleItem ? "Log Activity" : "+1 Lesson"}
                                         </Button>
                                         <Button
                                             variant="outline"

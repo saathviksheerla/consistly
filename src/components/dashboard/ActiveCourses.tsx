@@ -11,7 +11,10 @@ export function ActiveCourses() {
 
     if (!isLoaded) return null;
 
-    const activeCourses = courses.filter(c => c.completedLessons < c.totalLessons).slice(0, 3); // top 3 active
+    const activeCourses = courses.filter(c => {
+        const isFlexibleItem = c.totalLessons === 0;
+        return isFlexibleItem || c.completedLessons < c.totalLessons;
+    }).slice(0, 3); // top 3 active
 
     if (activeCourses.length === 0) {
         return (
@@ -36,10 +39,13 @@ export function ActiveCourses() {
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
                 {activeCourses.map(course => {
+                    const isFlexibleItem = course.totalLessons === 0;
                     const progress = course.totalLessons > 0 ? (course.completedLessons / course.totalLessons) * 100 : 0;
                     return (
                         <div key={course.id} className="flex items-center gap-4 bg-muted/30 p-3 rounded-lg border border-border/50">
-                            <ProgressRing progress={progress} size={48} strokeWidth={4} />
+                            {!isFlexibleItem && (
+                                <ProgressRing progress={progress} size={48} strokeWidth={4} />
+                            )}
                             <div className="flex-1 min-w-0">
                                 <Link href="/courses" className="font-medium text-sm truncate block hover:text-accent transition-colors">
                                     {course.title}
@@ -49,7 +55,7 @@ export function ActiveCourses() {
                                         {course.category}
                                     </Badge>
                                     <span className="text-xs text-muted-foreground">
-                                        {course.completedLessons} / {course.totalLessons}
+                                        {isFlexibleItem ? `Logged: ${course.completedLessons} times` : `${course.completedLessons} / ${course.totalLessons}`}
                                     </span>
                                 </div>
                             </div>

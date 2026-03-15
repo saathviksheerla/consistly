@@ -6,10 +6,17 @@ export type CourseCategory = string; // Upgraded to string for custom categories
 export interface Course {
     id: string;
     title: string;
-    url: string;
+    itemType?: string;
+    milestoneId?: string;
+    url?: string;
+    source?: string;
     totalLessons: number;
     completedLessons: number;
-    category: CourseCategory;
+    category?: CourseCategory;
+    consistencyGoal?: string;
+    consistencyDetails?: any;
+    progressStyle?: string;
+    missedDaysTone?: string;
     createdAt: number;
 }
 
@@ -79,7 +86,7 @@ export function useCourses() {
 
         const course = courses.find(c => c.id === id);
         if (!course) return;
-        const newProgress = Math.min(completedLessons, course.totalLessons);
+        const newProgress = course.totalLessons > 0 ? Math.min(completedLessons, course.totalLessons) : completedLessons;
 
         setCourses(prev => prev.map(c => c.id === id ? { ...c, completedLessons: newProgress } : c));
 
@@ -93,7 +100,7 @@ export function useCourses() {
         if (!user) return;
         const course = courses.find(c => c.id === id);
         if (!course) return;
-        const newProgress = Math.min(course.completedLessons + 1, course.totalLessons);
+        const newProgress = course.totalLessons > 0 ? Math.min(course.completedLessons + 1, course.totalLessons) : course.completedLessons + 1;
 
         setCourses(prev => prev.map(c => c.id === id ? { ...c, completedLessons: newProgress } : c));
 

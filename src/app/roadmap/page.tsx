@@ -50,13 +50,11 @@ export default function RoadmapPage() {
             setTitle(milestone.title);
             setTargetDate(milestone.targetDate);
             setLinkedCourseIds(milestone.linkedCourseIds || []);
+            setIsModalOpen(true);
         } else {
-            setEditingId(null);
-            setTitle("");
-            setTargetDate("");
-            setLinkedCourseIds([]);
+            // For new milestones (Goals), redirect to our new Flow which supports creating goals inline
+            window.location.href = "/courses/add";
         }
-        setIsModalOpen(true);
     };
 
     const closeModal = () => {
@@ -82,7 +80,7 @@ export default function RoadmapPage() {
                     <h1 className="text-3xl font-bold tracking-tight mb-2">Roadmap & Deadlines</h1>
                     <p className="text-muted-foreground">Keep your eyes on the prize and hit your goals.</p>
                 </div>
-                <Button onClick={() => openModal()}>+ Add Milestone</Button>
+                <Button onClick={() => openModal()}>+ Add Goal or Item</Button>
             </header>
 
             {milestones.length === 0 ? (
@@ -90,7 +88,7 @@ export default function RoadmapPage() {
                     <CardContent className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground">
                         <IconMap className="w-12 h-12 mb-4 opacity-20" />
                         <p className="mb-4">No milestones set. Where are you heading next?</p>
-                        <Button variant="outline" onClick={() => openModal()}>Set a Goal</Button>
+                        <Button variant="outline" onClick={() => openModal()}>Set a Goal / Add Item</Button>
                     </CardContent>
                 </Card>
             ) : (
