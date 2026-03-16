@@ -41,7 +41,7 @@ export default function LogPage() {
     const sortedLogs = [...studyLog].sort((a, b) => b.date.localeCompare(a.date));
 
     return (
-        <div className="p-6 md:p-10 pb-20 max-w-5xl mx-auto w-full flex flex-col gap-8 animate-in fade-in duration-500">
+        <div className="p-6 md:p-10 pb-32 md:pb-10 max-w-5xl mx-auto w-full flex flex-col gap-8 animate-in fade-in duration-500">
             <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight mb-2">Study Log</h1>

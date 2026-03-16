@@ -7,6 +7,7 @@ import { useMilestones } from "@/hooks/useMilestones";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { IconArrowLeft, IconCheckCircle } from "@/components/Icons";
+import { motion, AnimatePresence } from "framer-motion";
 
 const SCREENS = {
     NAME: 0,
@@ -19,6 +20,68 @@ const SCREENS = {
     MISSED_DAYS: 7,
     REVIEW: 8,
 };
+
+const OptionCard = ({ selected, label, onClick }: { selected: boolean, label: string, onClick: () => void }) => (
+    <div 
+        onClick={onClick}
+        className={`p-4 md:p-5 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between
+            ${selected ? 'border-accent bg-accent/5 ring-4 ring-accent/10 md:-translate-y-1' : 'border-border hover:border-accent/50 hover:bg-muted'}`}
+    >
+        <span className={`text-lg font-medium ${selected ? 'text-accent' : 'text-foreground'}`}>{label}</span>
+        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors
+            ${selected ? 'border-accent bg-accent text-primary-foreground' : 'border-muted-foreground'}`}>
+            {selected && <IconCheckCircle className="w-4 h-4" />}
+        </div>
+    </div>
+);
+
+const ScreenWrapper = ({ 
+    id_key, title, helperText, children, 
+    showNext = true, nextDisabled = false, 
+    showSkip = false, showBack = true, 
+    onNext, onBack, onSkip 
+}: any) => (
+    <motion.div 
+        key={id_key}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        className="absolute inset-0 flex flex-col h-full w-full max-w-md mx-auto px-6 overflow-y-auto overflow-x-hidden pt-4 pb-8"
+    >
+        <div className="flex-shrink-0 mt-8 mb-4 relative">
+            {showBack && (
+                <button 
+                    onClick={onBack} 
+                    className="absolute -top-12 -left-2 text-muted-foreground hover:text-foreground transition flex items-center gap-2 p-2 z-10"
+                >
+                    <IconArrowLeft className="w-5 h-5" /> Back
+                </button>
+            )}
+            <div className="pt-2">
+                <h1 className="text-3xl font-bold tracking-tight mb-3 text-foreground">{title}</h1>
+                {helperText && <p className="text-muted-foreground text-lg leading-relaxed">{helperText}</p>}
+            </div>
+        </div>
+        
+        <div className="flex-grow flex flex-col justify-center py-4 min-h-[300px]">
+            {children}
+        </div>
+        
+        <div className="flex-shrink-0 mt-auto flex flex-col gap-3 pt-6 pb-24 md:pb-8">
+            {showNext && (
+                <Button size="lg" className="w-full text-lg py-6" onClick={onNext} disabled={nextDisabled}>
+                    Continue
+                </Button>
+            )}
+            {showSkip && (
+                <Button variant="ghost" size="lg" className="w-full text-muted-foreground" onClick={onSkip}>
+                    Skip for now
+                </Button>
+            )}
+        </div>
+    </motion.div>
+);
 
 export default function AddCourseHabitFlow() {
     const router = useRouter();
@@ -102,72 +165,27 @@ export default function AddCourseHabitFlow() {
     };
 
     // --- Screen Components ---
-
-    const ScreenWrapper = ({ title, helperText, children, showNext = true, nextDisabled = false, showSkip = false }: any) => (
-        <div className="flex flex-col h-full w-full max-w-md mx-auto justify-center px-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {currentScreen > 0 && (
-                <button 
-                    onClick={prevScreen} 
-                    className="absolute top-6 left-6 md:top-10 md:left-10 text-muted-foreground hover:text-foreground transition flex items-center gap-2 p-2"
-                >
-                    <IconArrowLeft className="w-5 h-5" /> Back
-                </button>
-            )}
-            
-            <div className="mb-8 p-1">
-                <h1 className="text-3xl font-bold tracking-tight mb-3 text-foreground">{title}</h1>
-                {helperText && <p className="text-muted-foreground text-lg leading-relaxed">{helperText}</p>}
-            </div>
-            
-            <div className="flex-1 flex flex-col justify-center min-h-[300px]">
-                {children}
-            </div>
-            
-            <div className="mt-8 flex flex-col gap-3 pb-8">
-                {showNext && (
-                    <Button size="lg" className="w-full text-lg py-6" onClick={nextScreen} disabled={nextDisabled}>
-                        Continue
-                    </Button>
-                )}
-                {showSkip && (
-                    <Button variant="ghost" size="lg" className="w-full text-muted-foreground" onClick={handleSkip}>
-                        Skip for now
-                    </Button>
-                )}
-            </div>
-        </div>
-    );
-
-    const OptionCard = ({ selected, label, onClick }: { selected: boolean, label: string, onClick: () => void }) => (
-        <div 
-            onClick={onClick}
-            className={`p-4 md:p-5 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between
-                ${selected ? 'border-accent bg-accent/5 ring-4 ring-accent/10' : 'border-border hover:border-accent/50 hover:bg-muted'}`}
-        >
-            <span className={`text-lg font-medium ${selected ? 'text-accent' : 'text-foreground'}`}>{label}</span>
-            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors
-                ${selected ? 'border-accent bg-accent text-primary-foreground' : 'border-muted-foreground'}`}>
-                {selected && <IconCheckCircle className="w-4 h-4" />}
-            </div>
-        </div>
-    );
-
     return (
-        <div className="fixed inset-0 bg-background z-50 overflow-y-auto flex items-center">
+        <div className="fixed inset-0 bg-background z-50 overflow-hidden flex items-center justify-center">
             {/* Progress Bar */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-muted">
+            <div className="absolute top-0 left-0 w-full h-1 bg-muted z-20">
                 <div 
                     className="h-full bg-accent transition-all duration-500 ease-out" 
                     style={{ width: `${((currentScreen + 1) / 9) * 100}%` }}
                 />
             </div>
-
-            {currentScreen === SCREENS.NAME && (
-                <ScreenWrapper
-                    title="Give it a name"
-                    helperText="What are you working on? Keep it simple. You can change this anytime."
-                    nextDisabled={!title.trim()}
-                >
+            
+            <div className="relative w-full h-full max-w-md mx-auto">
+                <AnimatePresence mode="wait">
+                    {currentScreen === SCREENS.NAME && (
+                        <ScreenWrapper
+                            key="screen-name"
+                            id_key="screen-name"
+                            title="Give it a name"
+                            helperText="What are you working on? Keep it simple. You can change this anytime."
+                            nextDisabled={!title.trim()}
+                            showBack={currentScreen > 0} onNext={nextScreen} onBack={prevScreen} onSkip={handleSkip}
+                        >
                     <Input
                         autoFocus
                         value={title}
@@ -179,14 +197,17 @@ export default function AddCourseHabitFlow() {
                         }}
                     />
                 </ScreenWrapper>
-            )}
+                    )}
 
-            {currentScreen === SCREENS.GOAL && (
-                <ScreenWrapper
-                    title="Does this belong to a larger goal?"
-                    helperText="Goals help group related items together. Selecting one is optional."
-                    showSkip={true}
-                >
+                    {currentScreen === SCREENS.GOAL && (
+                        <ScreenWrapper
+                            key="screen-goal"
+                            id_key="screen-goal"
+                            title="Does this belong to a larger goal?"
+                            helperText="Goals help group related items together. Selecting one is optional."
+                            showSkip={true}
+                            showBack={currentScreen > 0} onNext={nextScreen} onBack={prevScreen} onSkip={handleSkip}
+                        >
                     <div className="flex flex-col gap-3">
                         <OptionCard 
                             selected={milestoneId === "none"} 
@@ -226,10 +247,13 @@ export default function AddCourseHabitFlow() {
                         )}
                     </div>
                 </ScreenWrapper>
-            )}
+                    )}
 
-            {currentScreen === SCREENS.SOURCE && (
-                <ScreenWrapper title="Where is this from?" helperText="Optional. Choose a platform if applicable." showSkip={true}>
+                    {currentScreen === SCREENS.SOURCE && (
+                        <ScreenWrapper 
+                            key="screen-source" id_key="screen-source" title="Where is this from?" helperText="Optional. Choose a platform if applicable." showSkip={true}
+                            showBack={currentScreen > 0} onNext={nextScreen} onBack={prevScreen} onSkip={handleSkip}
+                        >
                     <div className="grid grid-cols-2 gap-3">
                         {["YouTube", "Coursera", "Udemy", "Duolingo", "Book / Notes", "Notion", "College", "Other"].map(opt => (
                             <OptionCard 
@@ -241,10 +265,13 @@ export default function AddCourseHabitFlow() {
                         ))}
                     </div>
                 </ScreenWrapper>
-            )}
+                    )}
 
-            {currentScreen === SCREENS.LINK && (
-                <ScreenWrapper title="Add a link" helperText="We’ll save this so you can quickly jump to it. We don't track your activity there." showSkip={true}>
+                    {currentScreen === SCREENS.LINK && (
+                        <ScreenWrapper 
+                            key="screen-link" id_key="screen-link" title="Add a link" helperText="We’ll save this so you can quickly jump to it. We don't track your activity there." showSkip={true}
+                            showBack={currentScreen > 0} onNext={nextScreen} onBack={prevScreen} onSkip={handleSkip}
+                        >
                     <Input
                         autoFocus
                         type="url"
@@ -257,10 +284,13 @@ export default function AddCourseHabitFlow() {
                         }}
                     />
                 </ScreenWrapper>
-            )}
+                    )}
 
-            {currentScreen === SCREENS.CONSISTENCY && (
-                <ScreenWrapper title="How do you want to work on this?" helperText="Choose what feels realistic, not perfect.">
+                    {currentScreen === SCREENS.CONSISTENCY && (
+                        <ScreenWrapper 
+                            key="screen-consistency" id_key="screen-consistency" title="How do you want to work on this?" helperText="Choose what feels realistic, not perfect."
+                            showBack={currentScreen > 0} onNext={nextScreen} onBack={prevScreen} onSkip={handleSkip}
+                        >
                     <div className="flex flex-col gap-3">
                         {[
                             { id: "every_day", label: "A little every day" },
@@ -277,18 +307,21 @@ export default function AddCourseHabitFlow() {
                         ))}
                     </div>
                 </ScreenWrapper>
-            )}
+                    )}
 
-            {currentScreen === SCREENS.PERSONALIZATION && (
-                <ScreenWrapper 
-                    title={
-                        consistencyGoal === "every_day" ? "On most days, what feels doable?" :
-                        consistencyGoal === "few_times_week" ? "How many days per week?" :
-                        consistencyGoal === "target_date" ? "When would you like to finish?" : "Let's move on"
-                    }
-                    helperText={consistencyGoal === "decide_later" ? "You opted to decide later." : ""}
-                    nextDisabled={consistencyGoal !== "decide_later" && !consistencyDetails}
-                >
+                    {currentScreen === SCREENS.PERSONALIZATION && (
+                        <ScreenWrapper 
+                            key="screen-personalization"
+                            id_key="screen-personalization"
+                            title={
+                                consistencyGoal === "every_day" ? "On most days, what feels doable?" :
+                                consistencyGoal === "few_times_week" ? "How many days per week?" :
+                                consistencyGoal === "target_date" ? "When would you like to finish?" : "Let's move on"
+                            }
+                            helperText={consistencyGoal === "decide_later" ? "You opted to decide later." : ""}
+                            nextDisabled={consistencyGoal !== "decide_later" && !consistencyDetails}
+                            showBack={currentScreen > 0} onNext={nextScreen} onBack={prevScreen} onSkip={handleSkip}
+                        >
                     <div className="flex flex-col gap-3">
                         {consistencyGoal === "every_day" && ["15 minutes", "30 minutes", "1 hour", "Other"].map(opt => (
                             <OptionCard 
@@ -325,10 +358,13 @@ export default function AddCourseHabitFlow() {
                         )}
                     </div>
                 </ScreenWrapper>
-            )}
+                    )}
 
-            {currentScreen === SCREENS.PROGRESS_STYLE && (
-                <ScreenWrapper title="How would you like to track progress?" helperText="Default is to just mark days as done.">
+                    {currentScreen === SCREENS.PROGRESS_STYLE && (
+                        <ScreenWrapper 
+                            key="screen-progress-style" id_key="screen-progress-style" title="How would you like to track progress?" helperText="Default is to just mark days as done."
+                            showBack={currentScreen > 0} onNext={nextScreen} onBack={prevScreen} onSkip={handleSkip}
+                        >
                     <div className="flex flex-col gap-3">
                         {[
                             { id: "mark_done", label: "Just mark 'Done for today'" },
@@ -345,10 +381,13 @@ export default function AddCourseHabitFlow() {
                         ))}
                     </div>
                 </ScreenWrapper>
-            )}
+                    )}
 
-            {currentScreen === SCREENS.MISSED_DAYS && (
-                <ScreenWrapper title="Missed days happen. What should we do?" helperText="We want to support you without stressing you out.">
+                    {currentScreen === SCREENS.MISSED_DAYS && (
+                        <ScreenWrapper 
+                            key="screen-missed-days" id_key="screen-missed-days" title="Missed days happen. What should we do?" helperText="We want to support you without stressing you out."
+                            showBack={currentScreen > 0} onNext={nextScreen} onBack={prevScreen} onSkip={handleSkip}
+                        >
                     <div className="flex flex-col gap-3">
                         {[
                             { id: "gentle", label: "Just remind me gently" },
@@ -364,62 +403,75 @@ export default function AddCourseHabitFlow() {
                         ))}
                     </div>
                 </ScreenWrapper>
-            )}
+                    )}
 
-            {currentScreen === SCREENS.REVIEW && (
-                <div className="flex flex-col h-full w-full max-w-md mx-auto justify-center px-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <button 
-                        onClick={prevScreen} 
-                        className="absolute top-6 left-6 md:top-10 md:left-10 text-muted-foreground hover:text-foreground transition flex items-center gap-2 p-2"
-                    >
-                        <IconArrowLeft className="w-5 h-5" /> Back
-                    </button>
-                    
-                    <div className="mb-6 p-1 text-center">
-                        <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 text-accent">
-                            <IconCheckCircle className="w-10 h-10" />
-                        </div>
-                        <h1 className="text-3xl font-bold tracking-tight mb-2 text-foreground">You’re all set</h1>
-                        <p className="text-muted-foreground text-lg">Here's your plan to stay consistent.</p>
-                    </div>
-                    
-                    <div className="bg-muted/30 border border-border rounded-xl p-6 flex flex-col gap-4 text-left shadow-sm">
-                        <div>
-                            <span className="text-sm text-muted-foreground uppercase tracking-wider font-semibold block mb-1">Working On</span>
-                            <span className="text-xl font-medium">{title}</span>
-                        </div>
-                        
-                        {(milestoneId !== "none" || newMilestoneTitle) && (
-                            <div>
-                                <span className="text-sm text-muted-foreground uppercase tracking-wider font-semibold block mb-1">Part of Goal</span>
-                                <span className="text-lg">{milestoneId === "new" ? newMilestoneTitle : milestones.find(m => m.id === milestoneId)?.title || "Goal"}</span>
+                    {currentScreen === SCREENS.REVIEW && (
+                        <motion.div 
+                            key="screen-review"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                            className="absolute inset-0 flex flex-col h-full w-full max-w-md mx-auto px-6 overflow-y-auto overflow-x-hidden pt-4 pb-8"
+                        >
+                            <div className="flex-shrink-0 mt-8 mb-4 relative z-10">
+                                <button 
+                                    onClick={prevScreen} 
+                                    className="absolute -top-12 -left-2 text-muted-foreground hover:text-foreground transition flex items-center gap-2 p-2"
+                                >
+                                    <IconArrowLeft className="w-5 h-5" /> Back
+                                </button>
                             </div>
-                        )}
-                        
-                        <div>
-                            <span className="text-sm text-muted-foreground uppercase tracking-wider font-semibold block mb-1">Plan</span>
-                            <span className="text-lg">
-                                {consistencyGoal.replace(/_/g, " ")} 
-                                {consistencyDetails && ` (${consistencyDetails})`}
-                            </span>
-                        </div>
-                        
-                        <div>
-                            <span className="text-sm text-muted-foreground uppercase tracking-wider font-semibold block mb-1">Tracking Style</span>
-                            <span className="text-lg">{progressStyle.replace(/_/g, " ")}</span>
-                        </div>
-                    </div>
-                    
-                    <div className="mt-8 flex flex-col gap-3 pb-8">
-                        <Button size="lg" className="w-full text-lg py-6" onClick={handleFinish} disabled={isSubmitting}>
-                            {isSubmitting ? "Saving..." : "Start Tracking"}
-                        </Button>
-                        <Button variant="ghost" size="lg" className="w-full text-muted-foreground" onClick={() => setCurrentScreen(SCREENS.NAME)}>
-                            Edit details
-                        </Button>
-                    </div>
-                </div>
-            )}
+                            
+                            <div className="flex-grow flex flex-col justify-center py-4 min-h-[300px]">
+                                <div className="mb-6 p-1 text-center">
+                                    <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 text-accent">
+                                        <IconCheckCircle className="w-10 h-10" />
+                                    </div>
+                                    <h1 className="text-3xl font-bold tracking-tight mb-2 text-foreground">You’re all set</h1>
+                                    <p className="text-muted-foreground text-lg">Here's your plan to stay consistent.</p>
+                                </div>
+                                
+                                <div className="bg-muted/30 border border-border rounded-xl p-6 flex flex-col gap-4 text-left shadow-sm">
+                                    <div>
+                                        <span className="text-sm text-muted-foreground uppercase tracking-wider font-semibold block mb-1">Working On</span>
+                                        <span className="text-xl font-medium">{title}</span>
+                                    </div>
+                                    
+                                    {(milestoneId !== "none" || newMilestoneTitle) && (
+                                        <div>
+                                            <span className="text-sm text-muted-foreground uppercase tracking-wider font-semibold block mb-1">Part of Goal</span>
+                                            <span className="text-lg">{milestoneId === "new" ? newMilestoneTitle : milestones.find(m => m.id === milestoneId)?.title || "Goal"}</span>
+                                        </div>
+                                    )}
+                                    
+                                    <div>
+                                        <span className="text-sm text-muted-foreground uppercase tracking-wider font-semibold block mb-1">Plan</span>
+                                        <span className="text-lg">
+                                            {consistencyGoal.replace(/_/g, " ")} 
+                                            {consistencyDetails && ` (${consistencyDetails})`}
+                                        </span>
+                                    </div>
+                                    
+                                    <div>
+                                        <span className="text-sm text-muted-foreground uppercase tracking-wider font-semibold block mb-1">Tracking Style</span>
+                                        <span className="text-lg">{progressStyle.replace(/_/g, " ")}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="flex-shrink-0 mt-auto flex flex-col gap-3 pt-6 pb-24 md:pb-8">
+                                <Button size="lg" className="w-full text-lg py-6" onClick={handleFinish} disabled={isSubmitting}>
+                                    {isSubmitting ? "Saving..." : "Start Tracking"}
+                                </Button>
+                                <Button variant="ghost" size="lg" className="w-full text-muted-foreground" onClick={() => setCurrentScreen(SCREENS.NAME)}>
+                                    Edit details
+                                </Button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
         </div>
     );
 }
