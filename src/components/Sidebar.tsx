@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { IconHome, IconBookOpen, IconBookmark, IconCalendar, IconMap, IconFlame, IconUser } from "./Icons";
 import { useSettings } from "@/hooks/useSettings";
 import { Modal } from "@/components/ui/Modal";
@@ -100,13 +101,21 @@ export function Sidebar({ className = "" }: { className?: string }) {
                                 key={item.name}
                                 href={item.href}
                                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
+                  relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 z-10
                   ${isActive
-                                        ? "bg-primary/20 text-accent font-medium"
+                                        ? "text-accent font-medium"
                                         : "text-muted-foreground hover:bg-muted/50 hover:text-white"
                                     }
                 `}
                             >
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="sidebar-active"
+                                        className="absolute inset-0 bg-primary/20 rounded-lg -z-10"
+                                        initial={false}
+                                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                                    />
+                                )}
                                 <item.icon className="w-5 h-5" />
                                 {item.name}
                             </Link>

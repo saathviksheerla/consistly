@@ -1,8 +1,11 @@
 import * as React from "react";
+import { motion, HTMLMotionProps } from "framer-motion";
 
-export function Card({ className = "", ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function Card({ className = "", ...props }: HTMLMotionProps<"div">) {
     return (
-        <div
+        <motion.div
+            whileHover={{ y: -2 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
             className={`rounded-xl border border-border bg-card text-card-foreground shadow-sm ${className}`}
             {...props}
         />
