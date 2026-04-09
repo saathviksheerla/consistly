@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 export function useNavigation() {
-    const router = useRouter();
+  const router = useRouter();
 
-    const goToProfile = () => {
-        router.push("/profile");
-    };
+  const goToProfile = () => {
+    router.push('/profile');
+  };
 
-    return { goToProfile };
+  return { goToProfile };
 }
