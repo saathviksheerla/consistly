@@ -3,31 +3,36 @@
 Here is how to get the necessary API keys for your `.env.local` file to get the new backend working.
 
 ## 1. NEXTAUTH_SECRET (Already Generated for you!)
+
 NextAuth requires a secret key to encrypt active user sessions.
-*(I have already generated a secure token for you inside `.env.local`!)*
+_(I have already generated a secure token for you inside `.env.local`!)_
 If you ever need to generate a new one, run: `openssl rand -base64 32` in your terminal.
 
 ---
 
 ## 2. MONGODB_URI
+
 This connects your app to your remote MongoDB database.
 **How to get it:**
+
 1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register) and create a free account.
 2. Build a **Free "M0" Cluster** (AWS or Google Cloud region works fine).
 3. Once created, click **"Connect"** on your cluster.
-4. Go to **Database Access** on the left sidebar and create a new Database User (username and password). 
+4. Go to **Database Access** on the left sidebar and create a new Database User (username and password).
 5. Go to **Network Access** on the left sidebar and add `0.0.0.0/0` to the IP Access List (this allows you to connect from anywhere, including Vercel later).
 6. Under "Choose a connection method", select **Drivers**.
-7. Copy the connection string. It looks like this: 
+7. Copy the connection string. It looks like this:
    `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority`
-8. Paste it into `.env.local` as `MONGODB_URI`. 
-   *Important*: Replace `<username>` and `<password>` with the database credentials you made in Step 4. You can also append a database name before the `?` like `mongodb.net/consistly_db?retryWrites...`
+8. Paste it into `.env.local` as `MONGODB_URI`.
+   _Important_: Replace `<username>` and `<password>` with the database credentials you made in Step 4. You can also append a database name before the `?` like `mongodb.net/consistly_db?retryWrites...`
 
 ---
 
 ## 3. GitHub OAuth (Optional but Recommended)
+
 Lets users sign in with 1-click using their GitHub accounts.
 **How to get it:**
+
 1. Go to your [GitHub Developer Settings -> OAuth Apps](https://github.com/settings/developers).
 2. Click **"New OAuth App"**.
    - **Application Name:** consistly
@@ -40,8 +45,10 @@ Lets users sign in with 1-click using their GitHub accounts.
 ---
 
 ## 4. Google OAuth (Optional)
+
 Lets users sign in using their Google accounts.
 **How to get it:**
+
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
 2. Create a New Project named "consistly".
 3. Navigate to **APIs & Services -> OAuth consent screen**.
