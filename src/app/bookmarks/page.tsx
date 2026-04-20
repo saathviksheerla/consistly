@@ -8,10 +8,12 @@ import { Input, Select } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { Badge } from '@/components/ui/Badge';
 import { IconBookmark } from '@/components/Icons';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 export default function BookmarksPage() {
   const { bookmarks, isLoaded, addBookmark, togglePin, deleteBookmark } = useBookmarks();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Form State
   const [title, setTitle] = useState('');
@@ -56,9 +58,7 @@ export default function BookmarksPage() {
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2">Bookmarks</h1>
-          <p className="text-muted-foreground">
-            Keep your most important technical resources handy.
-          </p>
+          <p className="text-muted-foreground">Keep your most important technical resources handy.</p>
         </div>
         <Button onClick={() => setIsAddModalOpen(true)}>+ Add Bookmark</Button>
       </header>
@@ -122,7 +122,7 @@ export default function BookmarksPage() {
                       {new URL(bookmark.url).hostname}
                     </a>
                     <button
-                      onClick={() => deleteBookmark(bookmark.id)}
+                      onClick={() => setDeleteConfirmId(bookmark.id)}
                       className="text-xs text-red-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       Delete
@@ -177,6 +177,21 @@ export default function BookmarksPage() {
           </Button>
         </form>
       </Modal>
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={!!deleteConfirmId}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={async () => {
+          if (deleteConfirmId) {
+            await deleteBookmark(deleteConfirmId);
+            setDeleteConfirmId(null);
+          }
+        }}
+        title="Delete Bookmark"
+        description="Are you sure you want to delete this bookmark? This action cannot be undone."
+        confirmText="Delete"
+      />
     </div>
   );
 }

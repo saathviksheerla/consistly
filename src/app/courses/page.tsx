@@ -11,12 +11,13 @@ import { Badge } from '@/components/ui/Badge';
 import { IconCheckCircle } from '@/components/Icons';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 export default function CoursesPage() {
-  const { courses, isLoaded, addCourse, updateCourse, incrementProgress, deleteCourse } =
-    useCourses();
+  const { courses, isLoaded, addCourse, updateCourse, incrementProgress, deleteCourse } = useCourses();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Form State
   const [title, setTitle] = useState('');
@@ -97,11 +98,8 @@ export default function CoursesPage() {
         <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <AnimatePresence mode="popLayout">
             {courses.map((course) => {
-              // For flexible items/habits where totalLessons is 0, progress tracking differs.
-              // They shouldn't be immediately "done" just because 0 >= 0.
               const isFlexibleItem = course.totalLessons === 0;
-              const progress =
-                course.totalLessons > 0 ? (course.completedLessons / course.totalLessons) * 100 : 0;
+              const progress = course.totalLessons > 0 ? (course.completedLessons / course.totalLessons) * 100 : 0;
               const isDone = !isFlexibleItem && course.completedLessons >= course.totalLessons;
 
               return (
@@ -179,7 +177,7 @@ export default function CoursesPage() {
                         <Button
                           variant="ghost"
                           className="text-red-500 hover:text-red-400 hover:bg-red-500/10 px-3 text-xs md:text-sm w-full md:w-auto mt-1 md:mt-0"
-                          onClick={() => deleteCourse(course.id)}
+                          onClick={() => setDeleteConfirmId(course.id)}
                         >
                           Delete
                         </Button>
@@ -245,6 +243,21 @@ export default function CoursesPage() {
           </Button>
         </form>
       </Modal>
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={!!deleteConfirmId}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={async () => {
+          if (deleteConfirmId) {
+            await deleteCourse(deleteConfirmId);
+            setDeleteConfirmId(null);
+          }
+        }}
+        title="Delete Course"
+        description="Are you sure you want to delete this course? This action cannot be undone."
+        confirmText="Delete"
+      />
     </PageTransition>
   );
 }

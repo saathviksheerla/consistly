@@ -11,19 +11,14 @@ import { Badge } from '@/components/ui/Badge';
 import { IconMap, IconCheckCircle } from '@/components/Icons';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 export default function RoadmapPage() {
-  const {
-    milestones,
-    isLoaded: mlLoaded,
-    addMilestone,
-    updateMilestone,
-    updateStatus,
-    deleteMilestone,
-  } = useMilestones();
+  const { milestones, isLoaded: mlLoaded, addMilestone, updateMilestone, updateStatus, deleteMilestone } = useMilestones();
   const { courses, isLoaded: cLoaded } = useCourses();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Form State
   const [title, setTitle] = useState('');
@@ -171,21 +166,12 @@ export default function RoadmapPage() {
 
                   <div className="flex items-center gap-2">
                     {!isDone ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => updateStatus(m.id, 'Done')}
-                        className="gap-2"
-                      >
+                      <Button variant="outline" size="sm" onClick={() => updateStatus(m.id, 'Done')} className="gap-2">
                         <IconCheckCircle className="w-4 h-4" />
                         Mark Done
                       </Button>
                     ) : (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => updateStatus(m.id, 'In Progress')}
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => updateStatus(m.id, 'In Progress')}>
                         Undo
                       </Button>
                     )}
@@ -196,7 +182,7 @@ export default function RoadmapPage() {
                       variant="ghost"
                       size="sm"
                       className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                      onClick={() => deleteMilestone(m.id)}
+                      onClick={() => setDeleteConfirmId(m.id)}
                     >
                       Delete
                     </Button>
@@ -241,10 +227,7 @@ export default function RoadmapPage() {
                 <span className="text-sm text-muted-foreground p-2">No courses available.</span>
               ) : (
                 courses.map((c) => (
-                  <label
-                    key={c.id}
-                    className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted p-1 rounded"
-                  >
+                  <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted p-1 rounded">
                     <input
                       type="checkbox"
                       className="rounded border-border accent-accent"
@@ -265,6 +248,21 @@ export default function RoadmapPage() {
           </Button>
         </form>
       </Modal>
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={!!deleteConfirmId}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={async () => {
+          if (deleteConfirmId) {
+            await deleteMilestone(deleteConfirmId);
+            setDeleteConfirmId(null);
+          }
+        }}
+        title="Delete Milestone"
+        description="Are you sure you want to delete this milestone? This action cannot be undone."
+        confirmText="Delete"
+      />
     </PageTransition>
   );
 }
