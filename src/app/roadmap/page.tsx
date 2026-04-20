@@ -11,12 +11,14 @@ import { Badge } from "@/components/ui/Badge";
 import { IconMap, IconCheckCircle } from "@/components/Icons";
 import { PageTransition } from "@/components/ui/PageTransition";
 import { motion, AnimatePresence } from "framer-motion";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export default function RoadmapPage() {
     const { milestones, isLoaded: mlLoaded, addMilestone, updateMilestone, updateStatus, deleteMilestone } = useMilestones();
     const { courses, isLoaded: cLoaded } = useCourses();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
     // Form State
     const [title, setTitle] = useState("");
@@ -161,7 +163,7 @@ export default function RoadmapPage() {
                                         <Button variant="outline" size="sm" onClick={() => openModal(m)}>
                                             Edit
                                         </Button>
-                                        <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-400 hover:bg-red-500/10" onClick={() => deleteMilestone(m.id)}>
+                                        <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-400 hover:bg-red-500/10" onClick={() => setDeleteConfirmId(m.id)}>
                                             Delete
                                         </Button>
                                     </div>
@@ -220,6 +222,21 @@ export default function RoadmapPage() {
                     </Button>
                 </form>
             </Modal>
+
+            {/* Confirm Delete Modal */}
+            <ConfirmModal
+                isOpen={!!deleteConfirmId}
+                onClose={() => setDeleteConfirmId(null)}
+                onConfirm={async () => {
+                    if (deleteConfirmId) {
+                        await deleteMilestone(deleteConfirmId);
+                        setDeleteConfirmId(null);
+                    }
+                }}
+                title="Delete Milestone"
+                description="Are you sure you want to delete this milestone? This action cannot be undone."
+                confirmText="Delete"
+            />
         </PageTransition>
     );
 }
