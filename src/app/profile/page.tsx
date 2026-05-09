@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/providers/AuthProvider';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 export default function ProfilePage() {
   const { user, login, logout, update } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isConfirmSaveOpen, setIsConfirmSaveOpen] = useState(false);
+  const [isConfirmLogoutOpen, setIsConfirmLogoutOpen] = useState(false);
   const [error, setError] = useState('');
   const [daysUntilNextUpdate, setDaysUntilNextUpdate] = useState<number | null>(null);
 
@@ -30,11 +33,6 @@ export default function ProfilePage() {
   }, [user]);
 
   const handleSave = async () => {
-    if (!newName.trim() || newName.trim() === user?.name) {
-      setIsEditing(false);
-      return;
-    }
-
     setIsSaving(true);
     setError('');
 
@@ -50,10 +48,8 @@ export default function ProfilePage() {
         throw new Error(data.error || 'Failed to update username');
       }
 
-      // Successfully updated
       await update({ name: newName.trim() });
 
-      alert('Username updated successfully!');
       setIsEditing(false);
       setDaysUntilNextUpdate(90); // Optimistic UI update
     } catch (err: unknown) {
@@ -90,7 +86,7 @@ export default function ProfilePage() {
                     {error && <span className="text-xs text-destructive">{error}</span>}
                     <div className="flex gap-2">
                       <button
-                        onClick={handleSave}
+                        onClick={() => setIsConfirmSaveOpen(true)}
                         disabled={isSaving}
                         className="text-xs px-3 py-1 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
                       >
@@ -143,7 +139,7 @@ export default function ProfilePage() {
             </div>
             <div className="pt-4 border-t border-border">
               <button
-                onClick={() => logout()}
+                onClick={() => setIsConfirmLogoutOpen(true)}
                 className="px-4 py-2 rounded-lg bg-destructive/10 text-destructive font-medium hover:bg-red-600 hover:text-white transition-colors cursor-pointer"
               >
                 Log Out
@@ -151,7 +147,8 @@ export default function ProfilePage() {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-8 gap-4 text-center">
+          <>
+            <div className="flex flex-col items-center justify-center py-8 gap-4 text-center">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground mb-2">
               <svg
                 width="32"
@@ -178,8 +175,36 @@ export default function ProfilePage() {
               Log In
             </button>
           </div>
+          </>
         )}
       </div>
+      <ConfirmModal
+        isOpen={isConfirmSaveOpen}
+        onClose={() => setIsConfirmSaveOpen(false)}
+        onConfirm={async () => {
+          setIsConfirmSaveOpen(false);
+          await handleSave();
+        }}
+        title="Confirm Username Update"
+        description="Are you sure you want to update your username? This will immediately change how your profile is shown and cannot be changed again for 90 days."
+        confirmText="Save"
+        cancelText="Cancel"
+        variant="primary"
+        isLoading={isSaving}
+      />
+      <ConfirmModal
+        isOpen={isConfirmLogoutOpen}
+        onClose={() => setIsConfirmLogoutOpen(false)}
+        onConfirm={() => {
+          setIsConfirmLogoutOpen(false);
+          logout();
+        }}
+        title="Confirm Logout"
+        description="Are you sure you want to log out? You will need to sign in again to access your profile."
+        confirmText="Log Out"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

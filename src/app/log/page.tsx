@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { Heatmap } from '@/components/dashboard/Heatmap';
 
 export default function LogPage() {
@@ -19,13 +20,17 @@ export default function LogPage() {
   const [date, setDate] = useState(todayStr);
   const [minutes, setMinutes] = useState('');
   const [note, setNote] = useState('');
+  const [isConfirmAddOpen, setIsConfirmAddOpen] = useState(false);
 
   if (!isLoaded) return null;
 
   const handleAddLog = (e: React.FormEvent) => {
     e.preventDefault();
     if (!date || !minutes || isNaN(Number(minutes))) return;
+    setIsConfirmAddOpen(true);
+  };
 
+  const confirmAddLog = () => {
     addLog({
       date,
       minutes: Number(minutes),
@@ -37,6 +42,7 @@ export default function LogPage() {
     setMinutes('');
     setNote('');
     setIsAddModalOpen(false);
+    setIsConfirmAddOpen(false);
   };
 
   // Sort logs by date descending
@@ -129,6 +135,16 @@ export default function LogPage() {
           </Button>
         </form>
       </Modal>
+      <ConfirmModal
+        isOpen={isConfirmAddOpen}
+        onClose={() => setIsConfirmAddOpen(false)}
+        onConfirm={confirmAddLog}
+        title="Confirm Save Entry"
+        description="Do you want to save this study log entry?"
+        confirmText="Save"
+        cancelText="Cancel"
+        variant="primary"
+      />
     </div>
   );
 }
