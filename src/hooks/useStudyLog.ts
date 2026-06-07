@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/providers/AuthProvider';
+import { calculateStreakState } from '@/lib/streak';
 
 export interface StudyLogEntry {
   id: string;
@@ -69,46 +70,13 @@ export function useStudyLog() {
     }
   };
 
-  const calculateStreak = () => {
-    if (!studyLog.length) return 0;
-    const dates = [...new Set(studyLog.map((log) => log.date))].sort((a, b) => b.localeCompare(a));
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
-      .toISOString()
-      .split('T')[0];
-
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = new Date(yesterday.getTime() - yesterday.getTimezoneOffset() * 60000)
-      .toISOString()
-      .split('T')[0];
-
-    if (!dates.includes(todayStr) && !dates.includes(yesterdayStr)) {
-      return 0;
-    }
-
-    let streak = 0;
-    let currentDate = new Date(dates.includes(todayStr) ? todayStr : yesterdayStr);
-
-    for (let i = 0; i < 3650; i++) {
-      const dStr = new Date(currentDate.getTime() - currentDate.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split('T')[0];
-      if (dates.includes(dStr)) {
-        streak++;
-        currentDate.setDate(currentDate.getDate() - 1);
-      } else {
-        break;
-      }
-    }
-    return streak;
-  };
+  const { streak, freezes } = isLoaded ? calculateStreakState(studyLog) : { streak: 0, freezes: 0 };
 
   return {
     studyLog,
     isLoaded,
     addLog,
-    currentStreak: isLoaded ? calculateStreak() : 0,
+    currentStreak: streak,
+    availableFreezes: freezes,
   };
 }
